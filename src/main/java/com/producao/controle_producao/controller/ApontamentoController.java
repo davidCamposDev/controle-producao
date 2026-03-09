@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/apontamentos")
@@ -32,6 +33,13 @@ public class ApontamentoController {
             @PathVariable Long turnoId) {
 
         return apontamentoService.buscarPorDataETurno(data, turnoId);
+    }
+    @GetMapping("/resumo/{data}/turno/{turnoId}")
+    public Map<String, Object> resumoTurno(
+            @PathVariable LocalDate data,
+            @PathVariable Long turnoId) {
+
+        return apontamentoService.resumoTurno(data, turnoId);
     }
 
     @PutMapping("/{id}")

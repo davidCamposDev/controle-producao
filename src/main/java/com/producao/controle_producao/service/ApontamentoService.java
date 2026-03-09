@@ -7,7 +7,9 @@ import com.producao.controle_producao.repository.GradeHorarioRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ApontamentoService {
@@ -21,6 +23,7 @@ public class ApontamentoService {
         this.apontamentoRepository = apontamentoRepository;
         this.gradeHorarioRepository = gradeHorarioRepository;
     }
+
     public Apontamento salvar(Apontamento apontamento) {
         if (apontamento.getId() != null) {
             apontamentoRepository.findById(apontamento.getId())
@@ -61,6 +64,32 @@ public class ApontamentoService {
     public List<Apontamento> buscarPorDataETurno(LocalDate data, Long turnoId) {
         return apontamentoRepository
                 .findByDataAndTurnoIdOrderByGradeHorarioHoraInicio(data, turnoId);
+    }
+
+    public Map<String, Object> resumoTurno(LocalDate data, Long turnoId) {
+
+        List<Apontamento> apontamentos =
+                apontamentoRepository.findByDataAndTurnoIdOrderByGradeHorarioHoraInicio(data, turnoId);
+
+        int producaoTotal = 0;
+        int minutosPlanejados = 0;
+
+        for (Apontamento a : apontamentos) {
+            producaoTotal += a.getQuantidadeProduzida();
+            minutosPlanejados += a.getGradeHorario().getMinutosPlanejados();
+        }
+
+        double capacidadePorMinuto = CAPACIDADE_HORA / 60.0;
+        double metaEsperada = capacidadePorMinuto * minutosPlanejados * EFICIENCIA_DESEJADA;
+
+        double diferenca = producaoTotal - metaEsperada;
+
+        Map<String, Object> resultado = new HashMap<>();
+        resultado.put("producaoAtual", producaoTotal);
+        resultado.put("metaEsperada", metaEsperada);
+        resultado.put("diferenca", diferenca);
+
+        return resultado;
     }
 
 }
