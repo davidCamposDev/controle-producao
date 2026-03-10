@@ -21,12 +21,12 @@ public class ApontamentoController {
     public Apontamento criar(@RequestBody Apontamento apontamento) {
         return apontamentoService.salvar(apontamento);
     }
-
+    //Listagem do apontamento
     @GetMapping
     public List<Apontamento> listar() {
         return apontamentoService.listarTodos();
     }
-
+    //Pesquisa por data
     @GetMapping("/data/{data}/turno/{turnoId}")
     public List<Apontamento> buscarPorDataETurno(
             @PathVariable LocalDate data,
@@ -34,6 +34,7 @@ public class ApontamentoController {
 
         return apontamentoService.buscarPorDataETurno(data, turnoId);
     }
+    //Resumo do Turno
     @GetMapping("/resumo/{data}/turno/{turnoId}")
     public Map<String, Object> resumoTurno(
             @PathVariable LocalDate data,
@@ -42,9 +43,34 @@ public class ApontamentoController {
         return apontamentoService.resumoTurno(data, turnoId);
     }
 
+    @GetMapping("/grafico/{data}/turno/{turnoId}")
+    public List<Map<String, Object>> graficoTurno(
+            @PathVariable LocalDate data,
+            @PathVariable Long turnoId) {
+
+        return apontamentoService.graficoTurno(data, turnoId);
+    }
+    //Atualizar Hora a Hora
     @PutMapping("/{id}")
     public Apontamento atualizar(@PathVariable Long id, @RequestBody Apontamento apontamento) {
         apontamento.setId(id);
         return apontamentoService.salvar(apontamento);
+    }
+    //Hora A Hora ao Longo do Turno
+
+    @GetMapping("/curva/{data}/turno/{turnoId}")
+    public List<Map<String, Object>> curvaTurno(
+            @PathVariable LocalDate data,
+            @PathVariable Long turnoId) {
+
+        return apontamentoService.curvaTurno(data, turnoId);
+    }
+    //Percentual da meta diaria
+    @GetMapping("/progresso/{data}/turno/{turnoId}")
+    public Map<String, Object> progressoMeta(
+            @PathVariable LocalDate data,
+            @PathVariable Long turnoId) {
+
+        return apontamentoService.progressoMeta(data, turnoId);
     }
 }
