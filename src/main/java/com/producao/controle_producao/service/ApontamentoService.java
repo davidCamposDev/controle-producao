@@ -1,8 +1,5 @@
 package com.producao.controle_producao.service;
 
-import com.producao.controle_producao.dto.CurvaTurnoDTO;
-import com.producao.controle_producao.dto.GraficoTurnoDTO;
-import com.producao.controle_producao.dto.progressoMetaDTO;
 import com.producao.controle_producao.entity.Apontamento;
 import com.producao.controle_producao.entity.GradeHorario;
 import com.producao.controle_producao.repository.ApontamentoRepository;
@@ -29,25 +26,15 @@ public class ApontamentoService {
 //Apontamento Salvar os Dados Inseridos
 
     public Apontamento salvar(Apontamento apontamento) {
-        Long gradeId = apontamento.getGradeHorario().getId();
-        // Evitar duplicação
-        Optional<Apontamento> existente =
-                apontamentoRepository.findByDataAndGradeHorarioId(apontamento.getData(), gradeId);
-
-        if (existente.isPresent() && (apontamento.getId() == null ||
-                !existente.get().getId().equals(apontamento.getId()))) {
-
-            throw new RuntimeException("Já existe apontamento para esse horário nesse dia");
-        }
-        //Verificação de apontamento existente
-        if (apontamento.getId() != null) {
-            apontamentoRepository.findById(apontamento.getId())
-                    .orElseThrow(() -> new RuntimeException("Apontamento não encontrado"));
-        }
 
         if (apontamento.getGradeHorario() == null) {
             throw new RuntimeException("GradeHorario é obrigatório");
         }
+
+        Long gradeId = apontamento.getGradeHorario().getId();
+
+        Optional<Apontamento> existente =
+                apontamentoRepository.findByDataAndGradeHorarioId(apontamento.getData(), gradeId);
 
         GradeHorario bloco = gradeHorarioRepository
                 .findById(gradeId)
@@ -57,14 +44,24 @@ public class ApontamentoService {
             throw new RuntimeException("Quantidade produzida é obrigatória");
         }
 
-        apontamento.setGradeHorario(bloco);
-
         int minutos = bloco.getMinutosPlanejados();
 
         double capacidadePorMinuto = CAPACIDADE_HORA / 60.0;
         double capacidadeBloco = capacidadePorMinuto * minutos;
         double percentual = apontamento.getQuantidadeProduzida() / capacidadeBloco;
 
+        if (existente.isPresent()) {
+
+            Apontamento a = existente.get();
+            a.setQuantidadeProduzida(apontamento.getQuantidadeProduzida());
+            a.setObservacao(apontamento.getObservacao());
+            a.setPercentual(percentual);
+
+            return apontamentoRepository.save(a);
+
+        }
+
+        apontamento.setGradeHorario(bloco);
         apontamento.setPercentual(percentual);
 
         return apontamentoRepository.save(apontamento);

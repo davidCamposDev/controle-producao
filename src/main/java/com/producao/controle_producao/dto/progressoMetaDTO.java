@@ -2,12 +2,12 @@ package com.producao.controle_producao.dto;
 
 public class progressoMetaDTO {
     private int producaoAtual;
-    private int metaDiaria;
+    private double metaTurno;
     private double percentual;
 
-    public progressoMetaDTO(int producaoAtual, int metaDiaria, double percentual) {
+    public progressoMetaDTO(int producaoAtual, double metaTurno, double percentual) {
         this.producaoAtual = producaoAtual;
-        this.metaDiaria = metaDiaria;
+        this.metaTurno = metaTurno;
         this.percentual = percentual;
     }
 
@@ -15,8 +15,8 @@ public class progressoMetaDTO {
         return producaoAtual;
     }
 
-    public int getMetaDiaria() {
-        return metaDiaria;
+    public double getMetaTurno() {
+        return metaTurno;
     }
 
     public double getPercentual() {

@@ -11,6 +11,7 @@ public interface ApontamentoRepository extends JpaRepository<Apontamento, Long> 
             LocalDate data,
             Long turnoId
 
+
     );
     Optional<Apontamento> findByDataAndGradeHorarioId(LocalDate data, Long gradeHorarioId);
 

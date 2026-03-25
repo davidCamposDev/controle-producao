@@ -1,6 +1,5 @@
 package com.producao.controle_producao.controller;
 
-import com.producao.controle_producao.dto.CurvaTurnoDTO;
 import com.producao.controle_producao.dto.GraficoTurnoDTO;
 import com.producao.controle_producao.dto.progressoMetaDTO;
 import com.producao.controle_producao.entity.Apontamento;
@@ -43,14 +42,6 @@ public class ApontamentoController {
 
         return apontamentoService.buscarPorDataETurno(data, turnoId);
     }
-    //Resumo do Turno
-    @GetMapping("/resumo/{data}/turno/{turnoId}")
-    public Map<String, Object> resumoTurno(
-            @PathVariable LocalDate data,
-            @PathVariable Long turnoId) {
-
-        return producaoAnalyticsService.resumoTurno(data, turnoId);
-    }
 
     @GetMapping("/grafico/{data}/turno/{turnoId}")
     public List<GraficoTurnoDTO> graficoTurno(
@@ -64,15 +55,6 @@ public class ApontamentoController {
     public Apontamento atualizar(@PathVariable Long id, @RequestBody Apontamento apontamento) {
         apontamento.setId(id);
         return apontamentoService.salvar(apontamento);
-    }
-    //curva de produção do Turno
-
-    @GetMapping("/curva/{data}/turno/{turnoId}")
-    public List<CurvaTurnoDTO> curvaTurno(
-            @PathVariable LocalDate data,
-            @PathVariable Long turnoId) {
-
-        return producaoAnalyticsService.curvaTurno(data, turnoId);
     }
     //Percentual da meta diaria
     @GetMapping("/progresso/{data}/turno/{turnoId}")
