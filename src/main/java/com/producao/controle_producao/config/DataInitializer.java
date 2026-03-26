@@ -8,73 +8,77 @@ import com.producao.controle_producao.repository.TurnoRepository;
 import com.producao.controle_producao.repository.UsuarioRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalTime;
 
 @Component
-public class DataInitializer {
+public class DataInitializer implements CommandLineRunner {
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    private final GradeHorarioRepository repo;
 
-    @Autowired
-    private TurnoRepository turnoRepository;
+    public DataInitializer(GradeHorarioRepository repo) {
+        this.repo = repo;
+    }
 
-    @Autowired
-    private GradeHorarioRepository gradeHorarioRepository;
+    @Override
+    public void run(String... args) {
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+        // SEG → QUI
+        String[] dias = {"SEGUNDA", "TERCA", "QUARTA", "QUINTA"};
 
-    @PostConstruct
-    public void init() {
+        for (String dia : dias) {
 
-        // 🔐 USUÁRIO
-        if (usuarioRepository.count() == 0) {
-            Usuario u = new Usuario();
-            u.setEmail("admin@admin.com");
-            u.setSenha(passwordEncoder.encode("123456"));
-            usuarioRepository.save(u);
+            // 🔥 TURNO 2
+            salvarSeNaoExiste("17:00", 57, 228.0, dia, 2L);
+            salvarSeNaoExiste("18:00", 60, 240.0, dia, 2L);
+            salvarSeNaoExiste("19:00", 50, 200.0, dia, 2L);
+            salvarSeNaoExiste("20:00", 60, 240.0, dia, 2L);
+            salvarSeNaoExiste("21:00", 0, 0.0, dia, 2L);
+            salvarSeNaoExiste("22:00", 60, 240.0, dia, 2L);
+            salvarSeNaoExiste("23:00", 60, 240.0, dia, 2L);
+            salvarSeNaoExiste("00:00", 50, 200.0, dia, 2L);
+            salvarSeNaoExiste("01:00", 60, 240.0, dia, 2L);
+            salvarSeNaoExiste("02:00", 20, 80.0, dia, 2L);
         }
 
-        // 🏭 TURNOS
-        if (turnoRepository.count() == 0) {
+        // 🔥 SEXTA
+        String dia = "SEXTA";
 
-            Turno t1 = new Turno();
-            t1.setNome("1º Turno");
-            turnoRepository.save(t1);
+        salvarSeNaoExiste("16:00", 57, 228.0, dia, 2L);
+        salvarSeNaoExiste("17:00", 60, 240.0, dia, 2L);
+        salvarSeNaoExiste("18:00", 50, 200.0, dia, 2L);
+        salvarSeNaoExiste("19:00", 60, 240.0, dia, 2L);
+        salvarSeNaoExiste("20:00", 0, 0.0, dia, 2L);
+        salvarSeNaoExiste("21:00", 60, 240.0, dia, 2L);
+        salvarSeNaoExiste("22:00", 60, 240.0, dia, 2L);
+        salvarSeNaoExiste("23:00", 50, 200.0, dia, 2L);
+        salvarSeNaoExiste("00:00", 35, 140.0, dia, 2L);
 
-            Turno t2 = new Turno();
-            t2.setNome("2º Turno");
-            turnoRepository.save(t2);
+        System.out.println("🔥 Dados verificados/inseridos sem duplicação!");
+    }
 
-            // ⏱️ HORÁRIOS DO 1º TURNO (07–16)
-            for (int h = 7; h <= 16; h++) {
-                GradeHorario g = new GradeHorario();
-                g.setHoraInicio(LocalTime.of(h, 0));
-                g.setTurno(t1);
-                g.setMinutosPlanejados(60);
-                gradeHorarioRepository.save(g);
-            }
+    private void salvarSeNaoExiste(String hora, int minutos, Double meta, String dia, Long turnoId) {
 
-            // ⏱️ HORÁRIOS DO 2º TURNO (17–02)
-            for (int h = 17; h <= 23; h++) {
-                GradeHorario g = new GradeHorario();
-                g.setHoraInicio(LocalTime.of(h, 0));
-                g.setTurno(t2);
-                g.setMinutosPlanejados(60);
-                gradeHorarioRepository.save(g);
-            }
+        LocalTime horaInicio = LocalTime.parse(hora + ":00");
 
-            for (int h = 0; h <= 2; h++) {
-                GradeHorario g = new GradeHorario();
-                g.setHoraInicio(LocalTime.of(h, 0));
-                g.setTurno(t2);
-                g.setMinutosPlanejados(60);
-                gradeHorarioRepository.save(g);
-            }
+        boolean existe = repo.existsByHoraInicioAndDiaSemanaAndTurnoId(horaInicio, dia, turnoId);
+
+        if (!existe) {
+            GradeHorario g = new GradeHorario();
+
+            g.setHoraInicio(horaInicio);
+            g.setMinutosPlanejados(minutos);
+            g.setMeta(meta);
+            g.setDiaSemana(dia);
+
+            Turno turno = new Turno();
+            turno.setId(turnoId);
+            g.setTurno(turno);
+
+            repo.save(g);
         }
     }
 }

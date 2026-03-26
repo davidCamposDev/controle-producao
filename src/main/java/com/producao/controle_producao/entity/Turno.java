@@ -55,4 +55,8 @@ public class Turno {
     public void setHoraFim(LocalTime horaFim) {
         this.horaFim = horaFim;
     }
+
+    public void setId(Long Id) {
+        this.id = Id;
+    }
 }
