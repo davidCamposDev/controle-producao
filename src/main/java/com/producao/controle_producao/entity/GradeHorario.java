@@ -20,6 +20,9 @@ public class GradeHorario {
 
     private Double meta;
 
+    @Column(name = "dia_semana")
+    private String diaSemana;
+
     public Long getId() {
         return id;
     }
@@ -51,4 +54,11 @@ public class GradeHorario {
     public Double getMeta() { return meta;
     }
     public void setMeta(Double meta) {this.meta = meta;}
+    public String getDiaSemana() {
+        return diaSemana;
+    }
+
+    public void setDiaSemana(String diaSemana) {
+        this.diaSemana = diaSemana;
+    }
 }
