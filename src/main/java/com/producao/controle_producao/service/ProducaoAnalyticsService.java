@@ -8,6 +8,7 @@ import com.producao.controle_producao.repository.ApontamentoRepository;
 import com.producao.controle_producao.repository.GradeHorarioRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,8 +36,19 @@ public class ProducaoAnalyticsService {
     //Apresentação do Grafico Hora a Hora turno
     public List<GraficoTurnoDTO> graficoTurno(LocalDate data, Long turnoId) {
 
+        DayOfWeek dia = data.getDayOfWeek();
+
+        String diaSemana = switch (dia) {
+            case MONDAY -> "SEGUNDA";
+            case TUESDAY -> "TERCA";
+            case WEDNESDAY -> "QUARTA";
+            case THURSDAY -> "QUINTA";
+            case FRIDAY -> "SEXTA";
+            default -> "SEGUNDA";
+        };
+
         List<GradeHorario> grade =
-                gradeHorarioRepository.findByTurnoIdOrderByHoraInicio(turnoId);
+                gradeHorarioRepository.findByTurnoIdAndDiaSemanaOrderByHoraInicio(turnoId, diaSemana);
 
         List<Apontamento> apontamentos =
                 apontamentoRepository.findByDataAndTurnoIdOrderByGradeHorarioHoraInicio(data, turnoId);
