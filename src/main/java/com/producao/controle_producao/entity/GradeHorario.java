@@ -18,6 +18,8 @@ public class GradeHorario {
 
     private Integer minutosPlanejados;
 
+    private Double meta;
+
     public Long getId() {
         return id;
     }
@@ -45,4 +47,8 @@ public class GradeHorario {
     public void setMinutosPlanejados(Integer minutosPlanejados) {
         this.minutosPlanejados = minutosPlanejados;
     }
+
+    public Double getMeta() { return meta;
+    }
+    public void setMeta(Double meta) {this.meta = meta;}
 }

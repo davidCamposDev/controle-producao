@@ -10,20 +10,13 @@ import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ProducaoAnalyticsService {
 
     private final ApontamentoRepository apontamentoRepository;
     private final GradeHorarioRepository gradeHorarioRepository;
-
-    private static final double CAPACIDADE_HORA = 273.0;
-    private static final double EFICIENCIA_DESEJADA = 0.88;
-    private static final int META_DIARIA = 1908;
 
     public ProducaoAnalyticsService(
             ApontamentoRepository apontamentoRepository,
@@ -33,12 +26,11 @@ public class ProducaoAnalyticsService {
         this.gradeHorarioRepository = gradeHorarioRepository;
     }
 
-    //Apresentação do Grafico Hora a Hora turno
-    public List<GraficoTurnoDTO> graficoTurno(LocalDate data, Long turnoId) {
-
+    // 🔥 MÉTODO AUXILIAR (evita repetir código)
+    private String getDiaSemana(LocalDate data) {
         DayOfWeek dia = data.getDayOfWeek();
 
-        String diaSemana = switch (dia) {
+        return switch (dia) {
             case MONDAY -> "SEGUNDA";
             case TUESDAY -> "TERCA";
             case WEDNESDAY -> "QUARTA";
@@ -46,6 +38,12 @@ public class ProducaoAnalyticsService {
             case FRIDAY -> "SEXTA";
             default -> "SEGUNDA";
         };
+    }
+
+    // 📊 GRÁFICO HORA A HORA
+    public List<GraficoTurnoDTO> graficoTurno(LocalDate data, Long turnoId) {
+
+        String diaSemana = getDiaSemana(data);
 
         List<GradeHorario> grade =
                 gradeHorarioRepository.findByTurnoIdAndDiaSemanaOrderByHoraInicio(turnoId, diaSemana);
@@ -58,15 +56,11 @@ public class ProducaoAnalyticsService {
             mapaApontamentos.put(a.getGradeHorario().getId(), a);
         }
 
-        double capacidadePorMinuto = CAPACIDADE_HORA / 60.0;
-
         List<GraficoTurnoDTO> resultado = new ArrayList<>();
 
         for (GradeHorario g : grade) {
 
-            int minutos = g.getMinutosPlanejados();
-
-            double metaBloco = capacidadePorMinuto * minutos * EFICIENCIA_DESEJADA;
+            double metaBloco = g.getMeta(); // 🔥 AGORA VEM DO BANCO
 
             int producaoReal = 0;
             String observacao = "";
@@ -94,30 +88,31 @@ public class ProducaoAnalyticsService {
         return resultado;
     }
 
-    //Percentual da meta diaria
+    // 📈 PROGRESSO DO TURNO
     public progressoMetaDTO ProgressoMeta(LocalDate data, Long turnoId) {
 
+        String diaSemana = getDiaSemana(data);
+
         List<GradeHorario> grade =
-                gradeHorarioRepository.findByTurnoIdOrderByHoraInicio(turnoId);
+                gradeHorarioRepository.findByTurnoIdAndDiaSemanaOrderByHoraInicio(turnoId, diaSemana);
 
         List<Apontamento> apontamentos =
                 apontamentoRepository.findByDataAndTurnoIdOrderByGradeHorarioHoraInicio(data, turnoId);
 
         int producaoAtual = 0;
-        int minutosPlanejados = 0;
-
-        for (GradeHorario g  : grade){
-            minutosPlanejados += g.getMinutosPlanejados();
-        }
 
         for (Apontamento a : apontamentos) {
             producaoAtual += a.getQuantidadeProduzida();
         }
 
-        double capacidadePorMinuto = CAPACIDADE_HORA / 60.0;
-        double metaTurno = minutosPlanejados * capacidadePorMinuto * EFICIENCIA_DESEJADA;
-        double percentual = producaoAtual / metaTurno * 100;
+        // 🔥 META TOTAL VEM DO BANCO (não calcula mais)
+        double metaTurno = grade.stream()
+                .mapToDouble(GradeHorario::getMeta)
+                .sum();
 
+        double percentual = metaTurno > 0
+                ? (producaoAtual / metaTurno) * 100
+                : 0;
 
         return new progressoMetaDTO(producaoAtual, metaTurno, percentual);
     }
