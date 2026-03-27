@@ -32,30 +32,30 @@ public class DataInitializer implements CommandLineRunner {
         for (String dia : dias) {
 
             // 🔥 TURNO 2
-            salvarSeNaoExiste("17:00", 57, 228.0, dia, 2L);
-            salvarSeNaoExiste("18:00", 60, 240.0, dia, 2L);
-            salvarSeNaoExiste("19:00", 50, 200.0, dia, 2L);
-            salvarSeNaoExiste("20:00", 60, 240.0, dia, 2L);
-            salvarSeNaoExiste("21:00", 0, 0.0, dia, 2L);
-            salvarSeNaoExiste("22:00", 60, 240.0, dia, 2L);
-            salvarSeNaoExiste("23:00", 60, 240.0, dia, 2L);
-            salvarSeNaoExiste("00:00", 50, 200.0, dia, 2L);
-            salvarSeNaoExiste("01:00", 60, 240.0, dia, 2L);
-            salvarSeNaoExiste("02:00", 20, 80.0, dia, 2L);
+            salvarSeNaoExiste("07:00", 57, 228.0, dia, 1L);
+            salvarSeNaoExiste("08:00", 60, 240.0, dia, 1L);
+            salvarSeNaoExiste("09:00", 50, 200.0, dia, 1L);
+            salvarSeNaoExiste("10:00", 60, 240.0, dia, 1L);
+            salvarSeNaoExiste("11:00", 15, 60.0, dia, 1L);
+            salvarSeNaoExiste("12:00", 45, 180.0, dia, 1L);
+            salvarSeNaoExiste("13:00", 60, 240.0, dia, 1L);
+            salvarSeNaoExiste("14:00", 60, 240.0, dia, 1L);
+            salvarSeNaoExiste("15:00", 50, 200.0, dia, 1L);
+            salvarSeNaoExiste("16:00", 60, 240.0, dia, 1L);
         }
 
         // 🔥 SEXTA
         String dia = "SEXTA";
 
-        salvarSeNaoExiste("16:00", 57, 228.0, dia, 2L);
-        salvarSeNaoExiste("17:00", 60, 240.0, dia, 2L);
-        salvarSeNaoExiste("18:00", 50, 200.0, dia, 2L);
-        salvarSeNaoExiste("19:00", 60, 240.0, dia, 2L);
-        salvarSeNaoExiste("20:00", 0, 0.0, dia, 2L);
-        salvarSeNaoExiste("21:00", 60, 240.0, dia, 2L);
-        salvarSeNaoExiste("22:00", 60, 240.0, dia, 2L);
-        salvarSeNaoExiste("23:00", 50, 200.0, dia, 2L);
-        salvarSeNaoExiste("00:00", 35, 140.0, dia, 2L);
+        salvarSeNaoExiste("07:00", 57, 228.0, dia, 1L);
+        salvarSeNaoExiste("08:00", 60, 240.0, dia, 1L);
+        salvarSeNaoExiste("09:00", 50, 200.0, dia, 1L);
+        salvarSeNaoExiste("10:00", 60, 240.0, dia, 1L);
+        salvarSeNaoExiste("11:00", 15, 60.0, dia, 1L);
+        salvarSeNaoExiste("12:00", 45, 180.0, dia, 1L);
+        salvarSeNaoExiste("13:00", 60, 240.0, dia, 1L);
+        salvarSeNaoExiste("14:00", 50, 200.0, dia, 1L);
+        salvarSeNaoExiste("15:00", 60, 240.0, dia, 1L);
 
         System.out.println("🔥 Dados verificados/inseridos sem duplicação!");
     }
